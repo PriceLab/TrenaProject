@@ -47,6 +47,7 @@ setGeneric('getExpressionMatrixNames',  signature='obj', function(obj) standardG
 setGeneric('getExpressionMatrix',       signature='obj', function(obj, matrixName) standardGeneric ('getExpressionMatrix'))
 setGeneric('getVariantDatasetNames',    signature='obj', function(obj) standardGeneric ('getVariantDatasetNames'))
 setGeneric('getVariantDataset',         signature='obj', function(obj, datasetName) standardGeneric ('getVariantDataset'))
+#' @export
 setGeneric('getEnhancers',              signature='obj', function(obj, targetGene=NA) standardGeneric ('getEnhancers'))
 setGeneric('getCovariatesTable',        signature='obj', function(obj) standardGeneric ('getCovariatesTable'))
 setGeneric('getGeneRegion',             signature='obj', function(obj, flankingPercent=0) standardGeneric ('getGeneRegion'))
@@ -80,7 +81,7 @@ TrenaProject <- function(projectName,
                          geneInfoTable.path,
                          footprintDatabaseHost,
                          footprintDatabaseNames,
-                         footprintDatabasePort=5432,
+                         footprintDatabasePort,
                          expressionDirectory,
                          variantsDirectory,
                          covariatesFile,
@@ -88,20 +89,16 @@ TrenaProject <- function(projectName,
 {
 
    state <- new.env(parent=emptyenv())
-      # gene-specific information, freshly assigned with every call to setTargetGene
    state$targetGene <- NULL
    state$tbl.transcripts <- NULL
 
-   geneInfoTable.filepath <- system.file(package="TrenaProject", "extdata", "geneInfoTable_hg38.RData")
-
-
-   tbl.name <-load(geneInfoTable.filepath)
-   stopifnot(tbl.name == "tbl.geneInfo")
+   stopifnot(file.exists(geneInfoTable.path))
+   tbl.geneInfo <- get(load(geneInfoTable.path))
 
    .TrenaProject(projectName=projectName,
                  supportedGenes=supportedGenes,
                  genomeName=genomeName,
-                 geneInfoTable=data.frame(),
+                 geneInfoTable=tbl.geneInfo,
                  footprintDatabaseHost=footprintDatabaseHost,
                  footprintDatabaseNames=footprintDatabaseNames,
                  footprintDatabasePort=footprintDatabasePort,
@@ -440,4 +437,19 @@ setMethod('recognizedGene',  'TrenaProject',
       })
 
 #------------------------------------------------------------------------------------------------------------------------
+#' Get the transcript info for the gene, just the first row
+#'
+#' @rdname getTranscriptsTable
+#' @aliases getTranscriptsTable
+#'
+#' @param obj An object of class TrenaProject
+#'
+#' @export
 
+setMethod('getTranscriptsTable',  'TrenaProject',
+
+   function(obj) {
+      return(obj@state$tbl.transcripts)
+      })
+
+#------------------------------------------------------------------------------------------------------------------------
