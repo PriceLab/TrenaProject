@@ -34,7 +34,7 @@
 setGeneric('getProjectName',            signature='obj', function(obj) standardGeneric('getProjectName'))
 setGeneric('getSupportedGenes',         signature='obj', function(obj) standardGeneric('getSupportedGenes'))
 setGeneric('setTargetGene',             signature='obj', function(obj, targetGene, curatedGenesOnly=FALSE) standardGeneric('setTargetGene'))
-setGeneric('getGenomeName',             signature='obj', function(obj) standardGeneric('getGenomeName'))
+setGeneric('getGenome',                 signature='obj', function(obj) standardGeneric('getGenome'))
 setGeneric('getTargetGene',             signature='obj', function(obj) standardGeneric('getTargetGene'))
 setGeneric('getGeneInfoTable',          signature='obj', function(obj) standardGeneric('getGeneInfoTable'))
 setGeneric('getFootprintDatabaseHost',  signature='obj', function(obj) standardGeneric ('getFootprintDatabaseHost'))
@@ -136,7 +136,7 @@ setMethod('show', 'TrenaProject',
     function(object) {
        cat(sprintf ('--- TrenaProject'), '\n', sep='')
        cat(sprintf("projectName: '%s'", getProjectName(object)), "\n", sep="")
-       cat(sprintf("genomeName: '%s'", getGenomeName(object)), "\n", sep="")
+       cat(sprintf("genomeName: '%s'", getGenome(object)), "\n", sep="")
        cat(sprintf("reg regions db host: %s", getFootprintDatabaseHost(object)), "\n", sep='')
        cat(sprintf("reg regions db port: %d", getFootprintDatabasePort(object)), "\n", sep='')
        cat(sprintf("reg regions db names: %s", paste(getFootprintDatabaseNames(object), collapse=", ")), "\n", sep='')
@@ -162,14 +162,14 @@ setMethod('getProjectName', 'TrenaProject',
 #------------------------------------------------------------------------------------------------------------------------
 #' get the genome name - to be set by derived classes
 #'
-#' @rdname getGenomeName
-#' @aliases getGenomeName
+#' @rdname getGenome
+#' @aliases getGenome
 #'
 #' @param obj An object of class TrenaProject
 #'
 #' @export
 
-setMethod('getGenomeName', 'TrenaProject',
+setMethod('getGenome', 'TrenaProject',
 
    function(obj) {
       obj@genomeName
