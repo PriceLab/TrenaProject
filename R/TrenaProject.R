@@ -40,8 +40,8 @@ setGeneric('getGeneInfoTable',          signature='obj', function(obj) standardG
 setGeneric('getFootprintDatabaseHost',  signature='obj', function(obj) standardGeneric ('getFootprintDatabaseHost'))
 setGeneric('getFootprintDatabasePort',  signature='obj', function(obj) standardGeneric ('getFootprintDatabasePort'))
 setGeneric('getFootprintDatabaseNames', signature='obj', function(obj) standardGeneric ('getFootprintDatabaseNames'))
-setGeneric('getTranscriptsTable',       signature='obj', function(obj) standardGeneric ('getTranscriptsTable'))
-setGeneric('getPrimaryTranscriptInfo',  signature='obj', function(obj, targetGene=NA) standardGeneric ('getPrimaryTranscriptInfo'))
+setGeneric('getTranscriptsTable',       signature='obj', function(obj, targetGene=NA) standardGeneric ('getTranscriptsTable'))
+#setGeneric('getPrimaryTranscriptInfo',  signature='obj', function(obj, targetGene=NA) standardGeneric ('getPrimaryTranscriptInfo'))
 setGeneric('getExpressionDirectory',    signature='obj', function(obj) standardGeneric ('getExpressionDirectory'))
 setGeneric('getExpressionMatrixNames',  signature='obj', function(obj) standardGeneric ('getExpressionMatrixNames'))
 setGeneric('getExpressionMatrix',       signature='obj', function(obj, matrixName) standardGeneric ('getExpressionMatrix'))
@@ -49,8 +49,15 @@ setGeneric('getVariantDatasetNames',    signature='obj', function(obj) standardG
 setGeneric('getVariantDataset',         signature='obj', function(obj, datasetName) standardGeneric ('getVariantDataset'))
 #' @export
 setGeneric('getEnhancers',              signature='obj', function(obj, targetGene=NA) standardGeneric ('getEnhancers'))
+#' @export
+setGeneric('getEncodeDHS',              signature='obj', function(obj, targetGene=NA) standardGeneric ('getEncodeDHS'))
+#' @export
+setGeneric('getChipSeq',                signature='obj', function(obj, chrom, start, end, tfs=NA) standardGeneric ('getChipSeq'))
 setGeneric('getCovariatesTable',        signature='obj', function(obj) standardGeneric ('getCovariatesTable'))
+#' @export
 setGeneric('getGeneRegion',             signature='obj', function(obj, flankingPercent=0) standardGeneric ('getGeneRegion'))
+#' @export
+setGeneric('getGeneEnhancersRegion',    signature='obj', function(obj, flankingPercent=0) standardGeneric ('getGeneEnhancersRegion'))
 setGeneric('recognizedGene',            signature='obj', function(obj, geneName) standardGeneric ('recognizedGene'))
 #------------------------------------------------------------------------------------------------------------------------
 #' Define an object of class Trena
@@ -81,7 +88,7 @@ TrenaProject <- function(projectName,
                          geneInfoTable.path,
                          footprintDatabaseHost,
                          footprintDatabaseNames,
-                         footprintDatabasePort,
+                         footprintDatabasePort=5432,
                          expressionDirectory,
                          variantsDirectory,
                          covariatesFile,
@@ -92,8 +99,12 @@ TrenaProject <- function(projectName,
    state$targetGene <- NULL
    state$tbl.transcripts <- NULL
 
-   stopifnot(file.exists(geneInfoTable.path))
-   tbl.geneInfo <- get(load(geneInfoTable.path))
+   if(is.na(geneInfoTable.path)){
+      tbl.geneInfo <- data.frame()
+   } else {
+      stopifnot(file.exists(geneInfoTable.path))
+      tbl.geneInfo <- get(load(geneInfoTable.path))
+     }
 
    .TrenaProject(projectName=projectName,
                  supportedGenes=supportedGenes,
@@ -448,8 +459,26 @@ setMethod('recognizedGene',  'TrenaProject',
 
 setMethod('getTranscriptsTable',  'TrenaProject',
 
-   function(obj) {
-      return(obj@state$tbl.transcripts)
+   function(obj, targetGene=NA_character_) {
+
+      tbl <- getGeneInfoTable(obj)
+
+      if(nrow(tbl) == 0){
+         message("no geneInfoTable for this project, returning empty data.frame")
+         return(data.frame())
+         }
+
+      if(!is.na(targetGene)){
+         return(subset(tbl, geneSymbol==targetGene))
+         }
+
+      targetGene <- getTargetGene(obj)
+      if(is.null(targetGene)){
+         message("no targetGene set for this project, none supplied as argument to this function")
+         return(data.frame())
+         }
+
+      return(subset(tbl, geneSymbol==targetGene))
       })
 
 #------------------------------------------------------------------------------------------------------------------------
