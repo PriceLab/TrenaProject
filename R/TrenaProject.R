@@ -41,7 +41,6 @@ setGeneric('getFootprintDatabaseHost',  signature='obj', function(obj) standardG
 setGeneric('getFootprintDatabasePort',  signature='obj', function(obj) standardGeneric ('getFootprintDatabasePort'))
 setGeneric('getFootprintDatabaseNames', signature='obj', function(obj) standardGeneric ('getFootprintDatabaseNames'))
 setGeneric('getTranscriptsTable',       signature='obj', function(obj, targetGene=NA) standardGeneric ('getTranscriptsTable'))
-#setGeneric('getPrimaryTranscriptInfo',  signature='obj', function(obj, targetGene=NA) standardGeneric ('getPrimaryTranscriptInfo'))
 setGeneric('getExpressionDirectory',    signature='obj', function(obj) standardGeneric ('getExpressionDirectory'))
 setGeneric('getExpressionMatrixNames',  signature='obj', function(obj) standardGeneric ('getExpressionMatrixNames'))
 setGeneric('getExpressionMatrix',       signature='obj', function(obj, matrixName) standardGeneric ('getExpressionMatrix'))
@@ -49,6 +48,8 @@ setGeneric('getVariantDatasetNames',    signature='obj', function(obj) standardG
 setGeneric('getVariantDataset',         signature='obj', function(obj, datasetName) standardGeneric ('getVariantDataset'))
 #' @export
 setGeneric('getEnhancers',              signature='obj', function(obj, targetGene=NA) standardGeneric ('getEnhancers'))
+#' @export
+setGeneric('getGeneRegulatoryRegions',  signature='obj', function(obj, targetGene=NA) standardGeneric ('getGeneRegulatoryRegions'))
 #' @export
 setGeneric('getEncodeDHS',              signature='obj', function(obj, targetGene=NA) standardGeneric ('getEncodeDHS'))
 #' @export
@@ -480,5 +481,30 @@ setMethod('getTranscriptsTable',  'TrenaProject',
 
       return(subset(tbl, geneSymbol==targetGene))
       })
+
+#------------------------------------------------------------------------------------------------------------------------
+#' Get the chromosomal region surrounding the current targetGene, with a flanking percentage added up and downstream
+#'
+#' @rdname getGeneRegion
+#' @aliases getGeneRegion
+#'
+#' @param obj An object of class TrenaProject
+#' @param flankingPercent a numeric percentage of the gene's total span
+#'
+#' @return a chrom.loc (chrom:start-end) string
+#' @export
+
+setMethod('getGeneRegion',  'TrenaProject',
+
+     function(obj, flankingPercent=0){
+        tbl.transcripts <- getTranscriptsTable(obj)[1,]  # currently always nrow of 1
+        chrom <- tbl.transcripts$chr
+        start <- tbl.transcripts$start
+        end   <- tbl.transcripts$end
+        span <- 1 + end - start
+        flank <- round(span * (flankingPercent/100))
+        chromLocString <- sprintf("%s:%d-%d", chrom, start - flank, end + flank)
+        list(chrom=chrom, start=start, end=end, chromLocString=chromLocString)
+        })
 
 #------------------------------------------------------------------------------------------------------------------------
