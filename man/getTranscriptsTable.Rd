@@ -7,7 +7,7 @@
 \title{Get the transcript info for the gene, just the first row}
 \usage{
 \S4method{getTranscriptsTable}{TrenaProject}(obj,
-  targetGene = NA_character_)
+  targetGene = NA_character_, all = FALSE)
 }
 \arguments{
 \item{obj}{An object of class TrenaProject}

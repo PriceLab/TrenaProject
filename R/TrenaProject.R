@@ -40,7 +40,7 @@ setGeneric('getGeneInfoTable',          signature='obj', function(obj) standardG
 setGeneric('getFootprintDatabaseHost',  signature='obj', function(obj) standardGeneric ('getFootprintDatabaseHost'))
 setGeneric('getFootprintDatabasePort',  signature='obj', function(obj) standardGeneric ('getFootprintDatabasePort'))
 setGeneric('getFootprintDatabaseNames', signature='obj', function(obj) standardGeneric ('getFootprintDatabaseNames'))
-setGeneric('getTranscriptsTable',       signature='obj', function(obj, targetGene=NA) standardGeneric ('getTranscriptsTable'))
+setGeneric('getTranscriptsTable',       signature='obj', function(obj, targetGene=NA, all=FALSE) standardGeneric ('getTranscriptsTable'))
 setGeneric('getExpressionDirectory',    signature='obj', function(obj) standardGeneric ('getExpressionDirectory'))
 setGeneric('getExpressionMatrixNames',  signature='obj', function(obj) standardGeneric ('getExpressionMatrixNames'))
 setGeneric('getExpressionMatrix',       signature='obj', function(obj, matrixName) standardGeneric ('getExpressionMatrix'))
@@ -50,6 +50,9 @@ setGeneric('getVariantDataset',         signature='obj', function(obj, datasetNa
 setGeneric('getEnhancers',              signature='obj', function(obj, targetGene=NA) standardGeneric ('getEnhancers'))
 #' @export
 setGeneric('getGeneRegulatoryRegions',  signature='obj', function(obj, targetGene=NA) standardGeneric ('getGeneRegulatoryRegions'))
+#' @export
+setGeneric('getClassicalGenePromoter',  signature='obj', function(obj, targetGene=NA, upstream=5000, downstream=5000)
+               standardGeneric ('getClassicalGenePromoter'))
 #' @export
 setGeneric('getEncodeDHS',              signature='obj', function(obj, targetGene=NA) standardGeneric ('getEncodeDHS'))
 #' @export
@@ -460,9 +463,11 @@ setMethod('recognizedGene',  'TrenaProject',
 
 setMethod('getTranscriptsTable',  'TrenaProject',
 
-   function(obj, targetGene=NA_character_) {
+   function(obj, targetGene=NA_character_, all=FALSE) {
 
       tbl <- getGeneInfoTable(obj)
+      if(all)
+         return(tbl)
 
       if(nrow(tbl) == 0){
          message("no geneInfoTable for this project, returning empty data.frame")

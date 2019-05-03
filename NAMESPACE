@@ -2,11 +2,12 @@
 
 export(TrenaProject)
 export(getChipSeq)
+export(getClassicalGenePromoter)
 export(getEncodeDHS)
 export(getEnhancers)
 export(getGeneEnhancersRegion)
 export(getGeneRegion)
-export(getRegulatoryRegions)
+export(getGeneRegulatoryRegions)
 exportMethods(getCovariatesTable)
 exportMethods(getExpressionDirectory)
 exportMethods(getExpressionMatrix)
