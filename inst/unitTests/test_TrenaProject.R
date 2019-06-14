@@ -48,11 +48,8 @@ test_ctor <- function()
    checkEquals(getFootprintDatabaseHost(tp), footprintDatabaseHost)
    checkEquals(getFootprintDatabaseNames(tp), footprintDatabaseNames)
 
-   printf("--- testing get/setTargetGene")
    setTargetGene(tp, genes[1])
    checkEquals(getTargetGene(tp), genes[1])
-
-   printf("--- getting transcript info for %s", genes[1])
 
    suppressMessages(tbl.transcripts <- getTranscriptsTable(tp))
    checkTrue(nrow(tbl.transcripts) == 0)
