@@ -15,6 +15,7 @@ if(!exists("tp")){
    footprintDatabaseNames <- c("db1", "db2")
 
    expressionDirectory <- NA_character_
+   genomicRegionsDirectory <- system.file(package="TrenaProject", "extdata", "genomicRegions")
    variantsDirectory <- NA_character_
    covariatesFile <- NA_character_
 
@@ -25,6 +26,7 @@ if(!exists("tp")){
                       footprintDatabaseHost=footprintDatabaseHost,
                       footprintDatabaseNames=footprintDatabaseNames,
                       expressionDirectory=expressionDirectory,
+                      genomicRegionsDirectory=genomicRegionsDirectory,
                       variantsDirectory=variantsDirectory,
                       covariatesFile=covariatesFile,
                       quiet=TRUE)
@@ -47,7 +49,6 @@ test_ctor <- function()
    checkEquals(getFootprintDatabaseNames(tp), footprintDatabaseNames)
 
    printf("--- testing get/setTargetGene")
-   #checkTrue(is.null(getTargetGene(tp)))
    setTargetGene(tp, genes[1])
    checkEquals(getTargetGene(tp), genes[1])
 
@@ -55,6 +56,11 @@ test_ctor <- function()
 
    suppressMessages(tbl.transcripts <- getTranscriptsTable(tp))
    checkTrue(nrow(tbl.transcripts) == 0)
+
+   names <- getGenomicRegionsDatasetNames(tp)
+   checkTrue(all(c("ATAC-seq-erythropoiesis-d04_rep1", "ATAC-seq-erythropoiesis-d12_rep2") %in% names))
+   tbl.atac <- getGenomicRegionsDataset(tp, "ATAC-seq-erythropoiesis-d12_rep2")
+   checkEquals(dim(tbl.atac), c(6, 4))
 
 } # test_ctor
 #------------------------------------------------------------------------------------------------------------------------

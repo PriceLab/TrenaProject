@@ -23,6 +23,7 @@
                            footprintDatabasePort="numeric",
                            expressionDirectory="character",
                            variantsDirectory="character",
+                           genomicRegionsDirectory="character",
                            covariatesFile="character",
                            state="environment",
                            quiet="logical"
@@ -31,38 +32,40 @@
 
 
 #------------------------------------------------------------------------------------------------------------------------
-setGeneric('getProjectName',            signature='obj', function(obj) standardGeneric('getProjectName'))
-setGeneric('getSupportedGenes',         signature='obj', function(obj) standardGeneric('getSupportedGenes'))
-setGeneric('setTargetGene',             signature='obj', function(obj, targetGene, curatedGenesOnly=FALSE) standardGeneric('setTargetGene'))
-setGeneric('getGenome',                 signature='obj', function(obj) standardGeneric('getGenome'))
-setGeneric('getTargetGene',             signature='obj', function(obj) standardGeneric('getTargetGene'))
-setGeneric('getGeneInfoTable',          signature='obj', function(obj) standardGeneric('getGeneInfoTable'))
-setGeneric('getFootprintDatabaseHost',  signature='obj', function(obj) standardGeneric ('getFootprintDatabaseHost'))
-setGeneric('getFootprintDatabasePort',  signature='obj', function(obj) standardGeneric ('getFootprintDatabasePort'))
-setGeneric('getFootprintDatabaseNames', signature='obj', function(obj) standardGeneric ('getFootprintDatabaseNames'))
-setGeneric('getTranscriptsTable',       signature='obj', function(obj, targetGene=NA, all=FALSE) standardGeneric ('getTranscriptsTable'))
-setGeneric('getExpressionDirectory',    signature='obj', function(obj) standardGeneric ('getExpressionDirectory'))
-setGeneric('getExpressionMatrixNames',  signature='obj', function(obj) standardGeneric ('getExpressionMatrixNames'))
-setGeneric('getExpressionMatrix',       signature='obj', function(obj, matrixName) standardGeneric ('getExpressionMatrix'))
-setGeneric('getVariantDatasetNames',    signature='obj', function(obj) standardGeneric ('getVariantDatasetNames'))
-setGeneric('getVariantDataset',         signature='obj', function(obj, datasetName) standardGeneric ('getVariantDataset'))
+setGeneric('getProjectName',                signature='obj', function(obj) standardGeneric('getProjectName'))
+setGeneric('getSupportedGenes',             signature='obj', function(obj) standardGeneric('getSupportedGenes'))
+setGeneric('setTargetGene',                 signature='obj', function(obj, targetGene, curatedGenesOnly=FALSE) standardGeneric('setTargetGene'))
+setGeneric('getGenome',                     signature='obj', function(obj) standardGeneric('getGenome'))
+setGeneric('getTargetGene',                 signature='obj', function(obj) standardGeneric('getTargetGene'))
+setGeneric('getGeneInfoTable',              signature='obj', function(obj) standardGeneric('getGeneInfoTable'))
+setGeneric('getFootprintDatabaseHost',      signature='obj', function(obj) standardGeneric ('getFootprintDatabaseHost'))
+setGeneric('getFootprintDatabasePort',      signature='obj', function(obj) standardGeneric ('getFootprintDatabasePort'))
+setGeneric('getFootprintDatabaseNames',     signature='obj', function(obj) standardGeneric ('getFootprintDatabaseNames'))
+setGeneric('getTranscriptsTable',           signature='obj', function(obj, targetGene=NA, all=FALSE) standardGeneric ('getTranscriptsTable'))
+setGeneric('getExpressionDirectory',        signature='obj', function(obj) standardGeneric ('getExpressionDirectory'))
+setGeneric('getExpressionMatrixNames',      signature='obj', function(obj) standardGeneric ('getExpressionMatrixNames'))
+setGeneric('getExpressionMatrix',           signature='obj', function(obj, matrixName) standardGeneric ('getExpressionMatrix'))
+setGeneric('getVariantDatasetNames',        signature='obj', function(obj) standardGeneric ('getVariantDatasetNames'))
+setGeneric('getVariantDataset',             signature='obj', function(obj, datasetName) standardGeneric ('getVariantDataset'))
+setGeneric('getGenomicRegionsDatasetNames', signature='obj', function(obj) standardGeneric ('getGenomicRegionsDatasetNames'))
+setGeneric('getGenomicRegionsDataset',      signature='obj', function(obj, datasetName) standardGeneric ('getGenomicRegionsDataset'))
 #' @export
-setGeneric('getEnhancers',              signature='obj', function(obj, targetGene=NA) standardGeneric ('getEnhancers'))
+setGeneric('getEnhancers',                  signature='obj', function(obj, targetGene=NA) standardGeneric ('getEnhancers'))
 #' @export
-setGeneric('getGeneRegulatoryRegions',  signature='obj', function(obj, targetGene=NA) standardGeneric ('getGeneRegulatoryRegions'))
+setGeneric('getGeneRegulatoryRegions',      signature='obj', function(obj, targetGene=NA) standardGeneric ('getGeneRegulatoryRegions'))
 #' @export
-setGeneric('getClassicalGenePromoter',  signature='obj', function(obj, targetGene=NA, upstream=5000, downstream=5000)
+setGeneric('getClassicalGenePromoter',      signature='obj', function(obj, targetGene=NA, upstream=5000, downstream=5000)
                standardGeneric ('getClassicalGenePromoter'))
 #' @export
-setGeneric('getEncodeDHS',              signature='obj', function(obj, targetGene=NA) standardGeneric ('getEncodeDHS'))
+setGeneric('getEncodeDHS',                  signature='obj', function(obj, targetGene=NA) standardGeneric ('getEncodeDHS'))
 #' @export
-setGeneric('getChipSeq',                signature='obj', function(obj, chrom, start, end, tfs=NA) standardGeneric ('getChipSeq'))
-setGeneric('getCovariatesTable',        signature='obj', function(obj) standardGeneric ('getCovariatesTable'))
+setGeneric('getChipSeq',                    signature='obj', function(obj, chrom, start, end, tfs=NA) standardGeneric ('getChipSeq'))
+setGeneric('getCovariatesTable',            signature='obj', function(obj) standardGeneric ('getCovariatesTable'))
 #' @export
-setGeneric('getGeneRegion',             signature='obj', function(obj, flankingPercent=0) standardGeneric ('getGeneRegion'))
+setGeneric('getGeneRegion',                 signature='obj', function(obj, flankingPercent=0) standardGeneric ('getGeneRegion'))
 #' @export
-setGeneric('getGeneEnhancersRegion',    signature='obj', function(obj, flankingPercent=0) standardGeneric ('getGeneEnhancersRegion'))
-setGeneric('recognizedGene',            signature='obj', function(obj, geneName) standardGeneric ('recognizedGene'))
+setGeneric('getGeneEnhancersRegion',        signature='obj', function(obj, flankingPercent=0) standardGeneric ('getGeneEnhancersRegion'))
+setGeneric('recognizedGene',                signature='obj', function(obj, geneName) standardGeneric ('recognizedGene'))
 #------------------------------------------------------------------------------------------------------------------------
 #' Define an object of class Trena
 #'
@@ -77,6 +80,7 @@ setGeneric('recognizedGene',            signature='obj', function(obj, geneName)
 #' @param footprintDatabaseHost Character string (e.g., "khaleesi.systemsbiology.net")
 #' @param footprintDatabaseNames Character string (e.g., "hint_brain_20")
 #' @param expressionDirectory A string pointing to a collection of RData expression matrices
+#' @param genomicRegionsDirectory A string pointing to a collection of RData files describing genomic regions of interest
 #' @param variantsDirectory A string pointing to a collection of RData variant files
 #' @param covariatesFile  the (optional) name of a covariates files
 #' @param quiet A logical indicating whether or not the Trena object should print output
@@ -94,6 +98,7 @@ TrenaProject <- function(projectName,
                          footprintDatabaseNames,
                          footprintDatabasePort=5432,
                          expressionDirectory,
+                         genomicRegionsDirectory,
                          variantsDirectory,
                          covariatesFile,
                          quiet)
@@ -118,6 +123,7 @@ TrenaProject <- function(projectName,
                  footprintDatabaseNames=footprintDatabaseNames,
                  footprintDatabasePort=footprintDatabasePort,
                  expressionDirectory=expressionDirectory,
+                 genomicRegionsDirectory=genomicRegionsDirectory,
                  variantsDirectory=variantsDirectory,
                  covariatesFile=covariatesFile,
                  state=state,
@@ -391,6 +397,48 @@ setMethod('getVariantDataset', 'TrenaProject',
         eval(parse(text=sprintf("tbl <- %s", load(file.name))))
         tbl
         })
+
+#------------------------------------------------------------------------------------------------------------------------
+#' Get a list of datasets each describing regions of interest, typically regulatory regions, open chromatin, etc
+#'
+#' @rdname getRegionDatasetNames
+#' @aliases getRegionDatasetNames
+#'
+#' @param obj An object of class TrenaProject
+#'
+#' @export
+
+setMethod('getGenomicRegionsDatasetNames', 'TrenaProject',
+
+    function(obj){
+       if(obj@genomicRegionsDirectory == "/dev/null")
+           return(list())
+        filenames <- sub(".RData", "", list.files(obj@genomicRegionsDirectory), fixed=TRUE)
+        return(filenames)
+        })
+
+#------------------------------------------------------------------------------------------------------------------------
+#' Get a list of datasets each describing regions of interest, typically regulatory regions, open chromatin, etc
+#'
+#' @rdname getRegionDatasetNames
+#' @aliases getRegionDatasetNames
+#'
+#' @param obj An object of class TrenaProject
+#'
+#' @export
+
+setMethod('getGenomicRegionsDataset', 'TrenaProject',
+
+    function(obj, datasetName){
+       if(obj@genomicRegionsDirectory == "/dev/null")
+           return(list())
+       filename <- sprintf("%s.RData", datasetName)
+       full.path <- file.path(obj@genomicRegionsDirectory, filename)
+       stopifnot(file.exists(full.path))
+       tbl <- NULL
+       eval(parse(text=paste("tbl <- ", load(full.path))))
+       invisible(tbl)
+       })
 
 #------------------------------------------------------------------------------------------------------------------------
 #' Get the covariates table in which each sample, for which expression data is available, is described
