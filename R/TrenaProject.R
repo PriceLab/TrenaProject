@@ -115,6 +115,12 @@ TrenaProject <- function(projectName,
       tbl.geneInfo <- get(load(geneInfoTable.path))
      }
 
+     # TODO: (pshannon 14jun2019)
+     # TODO: the location of many of the standard data directories are simply calculated.
+     # TODO: should be no need to specify them in explicit constructor arguments.
+     # TODO: can the identidy and directory of the ultimate derived class be learned
+     # TODO: here at runtime?
+
    .TrenaProject(projectName=projectName,
                  supportedGenes=supportedGenes,
                  genomeName=genomeName,
