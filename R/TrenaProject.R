@@ -419,7 +419,8 @@ setMethod('getGenomicRegionsDatasetNames', 'TrenaProject',
     function(obj){
        if(obj@genomicRegionsDirectory == "/dev/null")
            return(list())
-        filenames <- sub(".RData", "", list.files(obj@genomicRegionsDirectory), fixed=TRUE)
+        filenames <- grep(".RData", list.files(obj@genomicRegionsDirectory), fixed=TRUE, value=TRUE)
+        filenames <- sub(".RData", "", filenames)
         return(filenames)
         })
 
