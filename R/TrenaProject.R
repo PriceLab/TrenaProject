@@ -564,7 +564,7 @@ setMethod('getGeneRegion',  'TrenaProject',
         span <- 1 + end - start
         flank <- round(span * (flankingPercent/100))
         chromLocString <- sprintf("%s:%d-%d", chrom, start - flank, end + flank)
-        list(chrom=chrom, start=start, end=end, chromLocString=chromLocString)
+        list(chrom=chrom, start=start-flank, end=end+flank, chromLocString=chromLocString)
         })
 
 #------------------------------------------------------------------------------------------------------------------------
