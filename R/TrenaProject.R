@@ -66,6 +66,7 @@ setGeneric('getGeneRegion',                 signature='obj', function(obj, flank
 #' @export
 setGeneric('getGeneEnhancersRegion',        signature='obj', function(obj, flankingPercent=0) standardGeneric ('getGeneEnhancersRegion'))
 setGeneric('recognizedGene',                signature='obj', function(obj, geneName) standardGeneric ('recognizedGene'))
+setGeneric('getAllTranscriptionFactors',    signature='obj', function(obj) standardGeneric ('getAllTranscriptionFactors'))
 #------------------------------------------------------------------------------------------------------------------------
 #' Define an object of class Trena
 #'
@@ -566,5 +567,21 @@ setMethod('getGeneRegion',  'TrenaProject',
         chromLocString <- sprintf("%s:%d-%d", chrom, start - flank, end + flank)
         list(chrom=chrom, start=start-flank, end=end+flank, chromLocString=chromLocString)
         })
+
+#------------------------------------------------------------------------------------------------------------------------
+#' get all genes annotated by GO to
+#'
+#' @rdname getAllTranscriptionFactors
+#' @aliases getAllTranscriptionFactors
+#'
+#' @param obj An object of class TrenaProject
+#'
+#' @export
+
+setMethod('getAllTranscriptionFactors', 'TrenaProject',
+
+   function(obj) {
+      c()
+      })
 
 #------------------------------------------------------------------------------------------------------------------------
