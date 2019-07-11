@@ -41,7 +41,7 @@ runTests <- function()
 #------------------------------------------------------------------------------------------------------------------------
 test_ctor <- function()
 {
-   printf("--- test_ctor")
+   message(sprintf("--- test_ctor"))
 
    checkTrue("TrenaProject" %in% is(tp))
    checkEquals(getSupportedGenes(tp), genes)
