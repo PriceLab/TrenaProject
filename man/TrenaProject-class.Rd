@@ -9,8 +9,7 @@
 \usage{
 TrenaProject(projectName, supportedGenes, genomeName, geneInfoTable.path,
   footprintDatabaseHost, footprintDatabaseNames,
-  footprintDatabasePort = 5432, expressionDirectory,
-  genomicRegionsDirectory, variantsDirectory, covariatesFile, quiet)
+  footprintDatabasePort = 5432, packageDataDirectory, quiet)
 }
 \arguments{
 \item{supportedGenes}{a vector of character strings}
@@ -19,6 +18,8 @@ TrenaProject(projectName, supportedGenes, genomeName, geneInfoTable.path,
 
 \item{footprintDatabaseNames}{Character string (e.g., "hint_brain_20")}
 
+\item{quiet}{A logical indicating whether or not the Trena object should print output}
+
 \item{expressionDirectory}{A string pointing to a collection of RData expression matrices}
 
 \item{genomicRegionsDirectory}{A string pointing to a collection of RData files describing genomic regions of interest}
@@ -26,8 +27,6 @@ TrenaProject(projectName, supportedGenes, genomeName, geneInfoTable.path,
 \item{variantsDirectory}{A string pointing to a collection of RData variant files}
 
 \item{covariatesFile}{the (optional) name of a covariates files}
-
-\item{quiet}{A logical indicating whether or not the Trena object should print output}
 }
 \value{
 An object of the TrenaProject class

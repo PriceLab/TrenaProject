@@ -21,10 +21,11 @@
                            footprintDatabaseHost="character",
                            footprintDatabaseNames="character",
                            footprintDatabasePort="numeric",
-                           expressionDirectory="character",
-                           variantsDirectory="character",
-                           genomicRegionsDirectory="character",
-                           covariatesFile="character",
+                           packageDataDirectory="character",
+                           #expressionDirectory="character",
+                           #variantsDirectory="character",
+                           #genomicRegionsDirectory="character",
+                           #covariatesFile="character",
                            state="environment",
                            quiet="logical"
                            )
@@ -42,7 +43,8 @@ setGeneric('getFootprintDatabaseHost',      signature='obj', function(obj) stand
 setGeneric('getFootprintDatabasePort',      signature='obj', function(obj) standardGeneric ('getFootprintDatabasePort'))
 setGeneric('getFootprintDatabaseNames',     signature='obj', function(obj) standardGeneric ('getFootprintDatabaseNames'))
 setGeneric('getTranscriptsTable',           signature='obj', function(obj, targetGene=NA, all=FALSE) standardGeneric ('getTranscriptsTable'))
-setGeneric('getExpressionDirectory',        signature='obj', function(obj) standardGeneric ('getExpressionDirectory'))
+setGeneric('getDataDirectory',              signature='obj', function(obj) standardGeneric ('getDataDirectory'))
+#setGeneric('getExpressionDirectory',        signature='obj', function(obj) standardGeneric ('getExpressionDirectory'))
 setGeneric('getExpressionMatrixNames',      signature='obj', function(obj) standardGeneric ('getExpressionMatrixNames'))
 setGeneric('getExpressionMatrix',           signature='obj', function(obj, matrixName) standardGeneric ('getExpressionMatrix'))
 setGeneric('getVariantDatasetNames',        signature='obj', function(obj) standardGeneric ('getVariantDatasetNames'))
@@ -98,10 +100,7 @@ TrenaProject <- function(projectName,
                          footprintDatabaseHost,
                          footprintDatabaseNames,
                          footprintDatabasePort=5432,
-                         expressionDirectory,
-                         genomicRegionsDirectory,
-                         variantsDirectory,
-                         covariatesFile,
+                         packageDataDirectory,
                          quiet)
 {
 
@@ -129,10 +128,7 @@ TrenaProject <- function(projectName,
                  footprintDatabaseHost=footprintDatabaseHost,
                  footprintDatabaseNames=footprintDatabaseNames,
                  footprintDatabasePort=footprintDatabasePort,
-                 expressionDirectory=expressionDirectory,
-                 genomicRegionsDirectory=genomicRegionsDirectory,
-                 variantsDirectory=variantsDirectory,
-                 covariatesFile=covariatesFile,
+                 packageDataDirectory=packageDataDirectory,
                  state=state,
                  quiet=quiet)
 
@@ -157,7 +153,7 @@ setMethod('show', 'TrenaProject',
        cat(sprintf("reg regions db host: %s", getFootprintDatabaseHost(object)), "\n", sep='')
        cat(sprintf("reg regions db port: %d", getFootprintDatabasePort(object)), "\n", sep='')
        cat(sprintf("reg regions db names: %s", paste(getFootprintDatabaseNames(object), collapse=", ")), "\n", sep='')
-       cat(sprintf("expression matrix directory: %s", getExpressionDirectory(object)), "\n", sep='')
+       cat(sprintf("data directory: %s", getDataDirectory(object)), "\n", sep='')
        })
 
 #------------------------------------------------------------------------------------------------------------------------
@@ -304,17 +300,17 @@ setMethod('getFootprintDatabaseNames', 'TrenaProject',
 #------------------------------------------------------------------------------------------------------------------------
 #' Get the names of the expression directory, wherein serialized expression matrices will be found
 #'
-#' @rdname getExpressionDirectory
-#' @aliases getExpressionDirectory
+#' @rdname getDataDirectory
+#' @aliases getDataDirectory
 #'
 #' @param obj An object of class TrenaProject
 #'
 #' @export
 
-setMethod('getExpressionDirectory',  'TrenaProject',
+setMethod('getDataDirectory',  'TrenaProject',
 
    function(obj) {
-      obj@expressionDirectory
+      obj@packageDataDirectory
       })
 
 #------------------------------------------------------------------------------------------------------------------------
@@ -330,11 +326,13 @@ setMethod('getExpressionDirectory',  'TrenaProject',
 setMethod('getExpressionMatrixNames',  'TrenaProject',
 
    function(obj) {
-      if(is.na(obj@expressionDirectory))
-         return(list())
-      all.files <- list.files(obj@expressionDirectory)
-      rdata.filenames <- grep(".RData$", all.files, value=TRUE)
-      sub(".RData", "", rdata.filenames, fixed=TRUE)
+     directory <- file.path(getDataDirectory(obj), "expression")
+     if(dir.exists(directory)){
+        filenames <- grep(".RData", list.files(directory), fixed=TRUE, value=TRUE)
+        datasetNames <- sub(".RData", "", filenames)
+        return(datasetNames)
+        }
+      return(list())
       })
 
 #------------------------------------------------------------------------------------------------------------------------
@@ -351,19 +349,14 @@ setMethod('getExpressionMatrixNames',  'TrenaProject',
 setMethod('getExpressionMatrix',  'TrenaProject',
 
     function(obj, matrixName){
-       if(is.na(obj@expressionDirectory)){
-          return(NA)
-          }
-       if(!matrixName %in% getExpressionMatrixNames(obj)){
-          return(NA)
-          }
+       directory <- file.path(getDataDirectory(obj), "expression")
        filename <- sprintf("%s.RData", matrixName)
-       full.path <- file.path(obj@expressionDirectory, filename)
+       full.path <- file.path(directory, filename)
        stopifnot(file.exists(full.path))
        mtx <- NULL
        eval(parse(text=paste("mtx <- ", load(full.path))))
        invisible(mtx)
-        })
+       })
 
 #------------------------------------------------------------------------------------------------------------------------
 #' List the RData files in the variants directory
@@ -418,11 +411,13 @@ setMethod('getVariantDataset', 'TrenaProject',
 setMethod('getGenomicRegionsDatasetNames', 'TrenaProject',
 
     function(obj){
-       if(obj@genomicRegionsDirectory == "/dev/null")
-           return(list())
-        filenames <- grep(".RData", list.files(obj@genomicRegionsDirectory), fixed=TRUE, value=TRUE)
-        filenames <- sub(".RData", "", filenames)
-        return(filenames)
+       directory <- file.path(getDataDirectory(obj), "genomicRegions")
+       if(dir.exists(directory)){
+          filenames <- grep(".RData", list.files(directory), fixed=TRUE, value=TRUE)
+          filenames <- sub(".RData", "", filenames)
+          return(filenames)
+          }
+        return(list())
         })
 
 #------------------------------------------------------------------------------------------------------------------------
@@ -438,10 +433,9 @@ setMethod('getGenomicRegionsDatasetNames', 'TrenaProject',
 setMethod('getGenomicRegionsDataset', 'TrenaProject',
 
     function(obj, datasetName){
-       if(obj@genomicRegionsDirectory == "/dev/null")
-           return(list())
+       directory <- file.path(getDataDirectory(obj), "genomicRegions")
        filename <- sprintf("%s.RData", datasetName)
-       full.path <- file.path(obj@genomicRegionsDirectory, filename)
+       full.path <- file.path(directory, filename)
        stopifnot(file.exists(full.path))
        tbl <- NULL
        eval(parse(text=paste("tbl <- ", load(full.path))))
