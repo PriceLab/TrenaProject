@@ -14,10 +14,12 @@ if(!exists("tp")){
    footprintDatabaseHost <- "fake.host.net"
    footprintDatabaseNames <- c("db1", "db2")
 
-   expressionDirectory <- NA_character_
-   genomicRegionsDirectory <- system.file(package="TrenaProject", "extdata", "genomicRegions")
-   variantsDirectory <- NA_character_
-   covariatesFile <- NA_character_
+   packageDataDirectory <- system.file(package="TrenaProject", "extdata")
+
+   #expressionDirectory <- system.file(package="TrenaProject", "extdata", "genomicRegions")
+   #genomicRegionsDirectory <- system.file(package="TrenaProject", "extdata", "genomicRegions")
+   #variantsDirectory <- NA_character_
+   #covariatesFile <- NA_character_
 
    tp <- TrenaProject(projectName=projectName,
                       genomeName=genomeName,
@@ -25,10 +27,7 @@ if(!exists("tp")){
                       geneInfoTable.path=geneInfoTable.path,
                       footprintDatabaseHost=footprintDatabaseHost,
                       footprintDatabaseNames=footprintDatabaseNames,
-                      expressionDirectory=expressionDirectory,
-                      genomicRegionsDirectory=genomicRegionsDirectory,
-                      variantsDirectory=variantsDirectory,
-                      covariatesFile=covariatesFile,
+                      packageDataDirectory=packageDataDirectory,
                       quiet=TRUE)
    } # creating trenaProj for use in multiple functions below
 
@@ -36,6 +35,7 @@ if(!exists("tp")){
 runTests <- function()
 {
    test_ctor()
+   test_getData()
 
 } # runTests
 #------------------------------------------------------------------------------------------------------------------------
@@ -54,12 +54,25 @@ test_ctor <- function()
    suppressMessages(tbl.transcripts <- getTranscriptsTable(tp))
    checkTrue(nrow(tbl.transcripts) == 0)
 
+
+} # test_ctor
+#------------------------------------------------------------------------------------------------------------------------
+test_getData <- function()
+{
+   printf("--- test_getData")
+
+   expected <- c("dummyExpressionSet_1", "dummyExpressionSet_2")
+   names <- getExpressionMatrixNames(tp)
+   checkEquals(sort(names), sort(expected))
+   mtx <- getExpressionMatrix(tp, expected[1])
+
    names <- getGenomicRegionsDatasetNames(tp)
    checkTrue(all(c("ATAC-seq-erythropoiesis-d04_rep1", "ATAC-seq-erythropoiesis-d12_rep2") %in% names))
    tbl.atac <- getGenomicRegionsDataset(tp, "ATAC-seq-erythropoiesis-d12_rep2")
    checkEquals(dim(tbl.atac), c(6, 4))
 
-} # test_ctor
+
+} # test_getData
 #------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
    runTests()
