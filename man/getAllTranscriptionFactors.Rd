@@ -6,10 +6,12 @@
 \alias{getAllTranscriptionFactors}
 \title{get all genes annotated by GO to}
 \usage{
-\S4method{getAllTranscriptionFactors}{TrenaProject}(obj)
+\S4method{getAllTranscriptionFactors}{TrenaProject}(obj, source)
 }
 \arguments{
 \item{obj}{An object of class TrenaProject}
+
+\item{source}{A character string e.g., "MotifDb", "Gene Ontology"}
 }
 \description{
 get all genes annotated by GO to
