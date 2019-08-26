@@ -22,10 +22,6 @@
                            footprintDatabaseNames="character",
                            footprintDatabasePort="numeric",
                            packageDataDirectory="character",
-                           #expressionDirectory="character",
-                           #variantsDirectory="character",
-                           #genomicRegionsDirectory="character",
-                           #covariatesFile="character",
                            state="environment",
                            quiet="logical"
                            )
@@ -49,6 +45,8 @@ setGeneric('getExpressionMatrixNames',      signature='obj', function(obj) stand
 setGeneric('getExpressionMatrix',           signature='obj', function(obj, matrixName) standardGeneric ('getExpressionMatrix'))
 setGeneric('getVariantDatasetNames',        signature='obj', function(obj) standardGeneric ('getVariantDatasetNames'))
 setGeneric('getVariantDataset',             signature='obj', function(obj, datasetName) standardGeneric ('getVariantDataset'))
+setGeneric('getCovariateDatasetNames',      signature='obj', function(obj) standardGeneric ('getCovariateDatasetNames'))
+setGeneric('getCovariateDataset',           signature='obj', function(obj, datasetName) standardGeneric ('getCovariateDataset'))
 setGeneric('getGenomicRegionsDatasetNames', signature='obj', function(obj) standardGeneric ('getGenomicRegionsDatasetNames'))
 setGeneric('getGenomicRegionsDataset',      signature='obj', function(obj, datasetName) standardGeneric ('getGenomicRegionsDataset'))
 #' @export
@@ -62,13 +60,12 @@ setGeneric('getClassicalGenePromoter',      signature='obj', function(obj, targe
 setGeneric('getEncodeDHS',                  signature='obj', function(obj, targetGene=NA) standardGeneric ('getEncodeDHS'))
 #' @export
 setGeneric('getChipSeq',                    signature='obj', function(obj, chrom, start, end, tfs=NA) standardGeneric ('getChipSeq'))
-setGeneric('getCovariatesTable',            signature='obj', function(obj) standardGeneric ('getCovariatesTable'))
 #' @export
 setGeneric('getGeneRegion',                 signature='obj', function(obj, flankingPercent=0) standardGeneric ('getGeneRegion'))
 #' @export
 setGeneric('getGeneEnhancersRegion',        signature='obj', function(obj, flankingPercent=0) standardGeneric ('getGeneEnhancersRegion'))
 setGeneric('recognizedGene',                signature='obj', function(obj, geneName) standardGeneric ('recognizedGene'))
-setGeneric('getAllTranscriptionFactors',    signature='obj', function(obj) standardGeneric ('getAllTranscriptionFactors'))
+setGeneric('getAllTranscriptionFactors',    signature='obj', function(obj, source) standardGeneric ('getAllTranscriptionFactors'))
 #------------------------------------------------------------------------------------------------------------------------
 #' Define an object of class Trena
 #'
@@ -371,11 +368,12 @@ setMethod('getExpressionMatrix',  'TrenaProject',
 setMethod('getVariantDatasetNames', 'TrenaProject',
 
       function(obj){
-          if(obj@variantsDirectory == "/dev/null")
-             return(list())
-          filenames <- sub(".RData", "", list.files(obj@variantsDirectory), fixed=TRUE)
-          return(filenames)
-          })
+         variantsDirectory <- file.path(obj@packageDataDirectory, "variants")
+         if(!file.exists(variantsDirectory))
+            return(list())
+         filenames <- sub(".RData", "", list.files(variantsDirectory), fixed=TRUE)
+         return(filenames)
+         })
 
 #------------------------------------------------------------------------------------------------------------------------
 #' Get the specified variants table
@@ -391,8 +389,10 @@ setMethod('getVariantDatasetNames', 'TrenaProject',
 setMethod('getVariantDataset', 'TrenaProject',
 
     function(obj, datasetName){
-        stopifnot(!obj@variantsDirectory == "/dev/null")
-        file.name <- sprintf("%s.RData", file.path(obj@variantsDirectory, datasetName))
+        variantsDirectory <- file.path(obj@packageDataDirectory, "variants")
+        if(!file.exists(variantsDirectory))
+           return(NULL)
+        file.name <- sprintf("%s.RData", file.path(variantsDirectory, datasetName))
         tbl <- NULL
         eval(parse(text=sprintf("tbl <- %s", load(file.name))))
         tbl
@@ -443,24 +443,47 @@ setMethod('getGenomicRegionsDataset', 'TrenaProject',
        })
 
 #------------------------------------------------------------------------------------------------------------------------
-#' Get the covariates table in which each sample, for which expression data is available, is described
+#' List the RData files in the covariate directory
 #'
-#' @rdname getCovariatesTable
-#' @aliases getCovariatesTable
+#' @rdname getCovariateDatasetNames
+#' @aliases getCovariateDatasetNames
 #'
 #' @param obj An object of class TrenaProject
 #'
-#' @return A data.frame
 #' @export
 
-setMethod('getCovariatesTable', 'TrenaProject',
+setMethod('getCovariateDatasetNames', 'TrenaProject',
 
       function(obj){
-         tbl <- data.frame()
-         if(!is.na(obj@covariatesFile))
-            eval(parse(text=sprintf("tbl <- %s", load(obj@covariatesFile))))
-         tbl
+         covariatesDirectory <- file.path(obj@packageDataDirectory, "covariate")
+         if(!file.exists(covariatesDirectory))
+            return(list())
+         filenames <- sub(".RData", "", list.files(covariatesDirectory), fixed=TRUE)
+         return(filenames)
          })
+
+#------------------------------------------------------------------------------------------------------------------------
+#' Get the specified covariates table
+#'
+#' @rdname getCovariateDataset
+#' @aliases getCovariateDataset
+#'
+#' @param obj An object of class TrenaProject
+#' @param datasetName character string, the covariate dataset of interest
+#'
+#' @export
+
+setMethod('getCovariateDataset', 'TrenaProject',
+
+    function(obj, datasetName){
+        covariatesDirectory <- file.path(obj@packageDataDirectory, "covariates")
+        if(!file.exists(covariatesDirectory))
+           return(NULL)
+        file.name <- sprintf("%s.RData", file.path(covariatesDirectory, datasetName))
+        tbl <- NULL
+        eval(parse(text=sprintf("tbl <- %s", load(file.name))))
+        tbl
+        })
 
 #------------------------------------------------------------------------------------------------------------------------
 #' return the data.frame with gene ids, chromosome, tss of the primary transcript, and strand for all genes in the project
@@ -569,12 +592,13 @@ setMethod('getGeneRegion',  'TrenaProject',
 #' @aliases getAllTranscriptionFactors
 #'
 #' @param obj An object of class TrenaProject
+#' @param source A character string e.g., "MotifDb", "Gene Ontology"
 #'
 #' @export
 
 setMethod('getAllTranscriptionFactors', 'TrenaProject',
 
-   function(obj) {
+   function(obj, source) {
       c()
       })
 
