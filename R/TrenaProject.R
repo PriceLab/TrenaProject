@@ -50,9 +50,16 @@ setGeneric('getCovariateDataset',           signature='obj', function(obj, datas
 setGeneric('getGenomicRegionsDatasetNames', signature='obj', function(obj) standardGeneric ('getGenomicRegionsDatasetNames'))
 setGeneric('getGenomicRegionsDataset',      signature='obj', function(obj, datasetName) standardGeneric ('getGenomicRegionsDataset'))
 #' @export
-setGeneric('getEnhancers',                  signature='obj', function(obj, targetGene=NA) standardGeneric ('getEnhancers'))
+setGeneric('getEnhancers',                  signature='obj', function(obj, targetGene=NA, tissues="all") standardGeneric ('getEnhancers'))
 #' @export
-setGeneric('getGeneRegulatoryRegions',      signature='obj', function(obj, targetGene=NA) standardGeneric ('getGeneRegulatoryRegions'))
+setGeneric('getEnhancerTissues',            signature='obj', function(obj) standardGeneric ('getEnhancerTissues'))
+#' @export
+setGeneric('getGeneRegulatoryRegions',      signature='obj', function(obj, targetGene=NA, tissues="all",
+                                                                      generic.promoter.fallback.upstream=0,
+                                                                      generic.promoter.fallback.downstream=0,
+                                                                      proximal.promoter.upstream=0,
+                                                                      proximal.promoter.downstream=0)
+                                                               standardGeneric ('getGeneRegulatoryRegions'))
 #' @export
 setGeneric('getClassicalGenePromoter',      signature='obj', function(obj, targetGene=NA, upstream=5000, downstream=5000)
                standardGeneric ('getClassicalGenePromoter'))
