@@ -55,10 +55,10 @@ setGeneric('getEnhancers',                  signature='obj', function(obj, targe
 setGeneric('getEnhancerTissues',            signature='obj', function(obj) standardGeneric ('getEnhancerTissues'))
 #' @export
 setGeneric('getGeneRegulatoryRegions',      signature='obj', function(obj, targetGene=NA, tissues="all",
-                                                                      generic.promoter.fallback.upstream=0,
-                                                                      generic.promoter.fallback.downstream=0,
-                                                                      proximal.promoter.upstream=0,
-                                                                      proximal.promoter.downstream=0)
+                                                                      geneHancerMissing.promoter.upstream=0,
+                                                                      geneHancerMissing.promoter.downstream=0,
+                                                                      geneHancerSupplemental.promoter.upstream=0,
+                                                                      geneHancerSupplemental.promoter.downstream=0)
                                                                standardGeneric ('getGeneRegulatoryRegions'))
 #' @export
 setGeneric('getClassicalGenePromoter',      signature='obj', function(obj, targetGene=NA, upstream=5000, downstream=5000)
