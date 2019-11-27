@@ -71,6 +71,8 @@ setGeneric('getChipSeq',                    signature='obj', function(obj, chrom
 setGeneric('getGeneRegion',                 signature='obj', function(obj, flankingPercent=0) standardGeneric ('getGeneRegion'))
 #' @export
 setGeneric('getGeneEnhancersRegion',        signature='obj', function(obj, flankingPercent=0) standardGeneric ('getGeneEnhancersRegion'))
+#' @export
+setGeneric('getProximalPromoter',           signature='obj', function(obj, upstream, downstream) standardGeneric ('getProximalPromoter'))
 setGeneric('recognizedGene',                signature='obj', function(obj, geneName) standardGeneric ('recognizedGene'))
 setGeneric('getAllTranscriptionFactors',    signature='obj', function(obj, source) standardGeneric ('getAllTranscriptionFactors'))
 #------------------------------------------------------------------------------------------------------------------------
@@ -591,6 +593,35 @@ setMethod('getGeneRegion',  'TrenaProject',
         chromLocString <- sprintf("%s:%d-%d", chrom, start - flank, end + flank)
         list(chrom=chrom, start=start-flank, end=end+flank, chromLocString=chromLocString)
         })
+
+#------------------------------------------------------------------------------------------------------------------------
+#' Get the chromosomal region surrounding the current targetGene, with a flanking percentage added up and downstream
+#'
+#' @rdname getProximalPromoter
+#' @aliases getProximalPromoter
+#'
+#' @param obj An object of class TrenaProject
+#' @param upstream numeric, number of bases before (strand-aware) the TSS
+#' @param downstream numeric, number of bases after (strand-aware) the TSS
+#'
+#' @return a chrom.loc (chrom:start-end) string
+#' @export
+
+setMethod('getProximalPromoter',  'TrenaProject',
+
+     function(obj, upstream, downstream){
+        tbl.geneInfo <- getTranscriptsTable(obj)[1,]  # currently always nrow of 1
+        chrom <- tbl.geneInfo$chrom
+        tss <- tbl.geneInfo$tss
+        start.loc <- tss - upstream
+        end.loc   <- tss + downstream
+        if(tbl.geneInfo$strand == -1){
+          start.loc <- tss - downstream
+          end.loc   <- tss + upstream
+          }
+       loc.string <- sprintf("%s:%d-%d", chrom, start.loc, end.loc)
+       list(chrom=chrom, start=start.loc, end=end.loc, chromLocString=loc.string)
+       })
 
 #------------------------------------------------------------------------------------------------------------------------
 #' get all genes annotated by GO to

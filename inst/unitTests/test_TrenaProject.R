@@ -59,7 +59,7 @@ test_ctor <- function()
 #------------------------------------------------------------------------------------------------------------------------
 test_getData <- function()
 {
-   printf("--- test_getData")
+   message(sprintf("--- test_getData"))
 
    expected <- c("dummyExpressionSet_1", "dummyExpressionSet_2")
    names <- getExpressionMatrixNames(tp)
