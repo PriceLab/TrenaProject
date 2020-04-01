@@ -50,7 +50,7 @@ setGeneric('getCovariateDataset',           signature='obj', function(obj, datas
 setGeneric('getGenomicRegionsDatasetNames', signature='obj', function(obj) standardGeneric ('getGenomicRegionsDatasetNames'))
 setGeneric('getGenomicRegionsDataset',      signature='obj', function(obj, datasetName) standardGeneric ('getGenomicRegionsDataset'))
 #' @export
-setGeneric('getEnhancers',                  signature='obj', function(obj, targetGene=NA, tissues="all") standardGeneric ('getEnhancers'))
+setGeneric('getEnhancers',                  signature='obj', function(obj, targetGene=NA, tissues="all", maxSize=10000) standardGeneric ('getEnhancers'))
 #' @export
 setGeneric('getEnhancerTissues',            signature='obj', function(obj) standardGeneric ('getEnhancerTissues'))
 #' @export
